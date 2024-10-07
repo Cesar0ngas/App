@@ -4,6 +4,7 @@ import altair as alt
 import time
 from pymongo import MongoClient
 import pandas as pd
+import pymongo
 
 # Configuración de la página
 st.set_page_config(
