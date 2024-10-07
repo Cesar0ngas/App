@@ -31,70 +31,39 @@ page = st.sidebar.selectbox("Select a Page", ["Welcome", "Data Analysis"])
 
 if page == "Welcome":
     st.write("# Post Analysis Instagram! 📸")
-    st.write("""
-        Welcome to the Instagram Analytics app, a tool designed to provide valuable insights into engagement and content on Instagram.
-        This app helps brands, influencers, and social media analysts better understand user behavior and content reception on Instagram.
-
-        ### What can you do with this app?
-        - Visualize Engagement: Explore which users have the most engagement on their posts through graphs showing the number of likes and comments.
-        - Content Status: Quickly identify the proportion of active versus inactive content to understand engagement dynamics.
-        - Post Timing: See how posting activity fluctuates over time to spot significant patterns or events.
-        - User Popularity: Find out who the most popular users are in terms of likes, which can be useful for collaboration or marketing strategies.
-        - Comment Content Analysis: Through a word cloud, visualize the most frequent words in comments to get an idea of ​common trends and themes.
-        - Comment Distribution: Analyze how comments are distributed on posts to measure the degree of audience engagement.
-    """)
-
+    # Descripción de la aplicación...
 elif page == "Data Analysis":
     st.write("# Data Analysis Page")
-    
-    # Agregar un "choro" o texto introductorio
-    st.write("""
-        En esta sección, podrás analizar la interacción de los usuarios de Instagram en base a sus publicaciones. 
-        Aquí podrás visualizar la relación entre los likes y comentarios de cada usuario seleccionado. 
-        Utiliza el botón para cargar los datos y luego selecciona los usuarios de interés para generar un gráfico interactivo.
-        
-        ¡Explora y descubre quiénes son los usuarios más populares y con mayor nivel de engagement en sus publicaciones! 📊
-    """)
-    
-    if "data_loaded" not in st.session_state:
-        st.session_state.data_loaded = False
+    st.write("Aquí podrás analizar la interacción de los usuarios de Instagram en base a sus publicaciones.")
 
     # Botón para cargar datos y barra de progreso
-    if st.button("Load Data") or st.session_state.data_loaded:
+    if st.button("Load Data") or st.session_state.get("data_loaded", False):
         progress_bar = st.sidebar.progress(0)
         status_text = st.sidebar.empty()
-        
-        # Cargar los datos solo si no están en el estado de sesión
-        if not st.session_state.data_loaded:
-            data_load_state = st.text('Cargando datos...')
+
+        if not st.session_state.get("data_loaded", False):
             for i in range(1, 101):
                 time.sleep(0.01)
                 progress_bar.progress(i)
                 status_text.text(f"{i}% Complete")
-            
-            df = load_data()
-            if df.empty:
-                st.warning("No se encontraron datos. Verifica la conexión y la consulta a la base de datos.")
-            else:
-                st.session_state.df = df
-                st.session_state.data_loaded = True  # Marcar que los datos se han cargado
-                st.write("¡Datos cargados con éxito!")
-            
-            progress_bar.empty()
-            status_text.empty()
-        
-        # Lista de usuarios únicos y análisis solo si hay datos cargados
-        if st.session_state.data_loaded:
-            df = st.session_state.df
+            st.session_state.df = load_data()
+            st.session_state.data_loaded = True
+
+        progress_bar.empty()
+        status_text.empty()
+
+        # Verificar si hay datos cargados
+        df = st.session_state.df
+        if df.empty:
+            st.error("No se encontraron datos. Verifica la conexión y la consulta a la base de datos.")
+        else:
+            st.write("Datos cargados:")
+            st.write(df.head())
             unique_users = df['username'].unique()
             st.write(f"Total de usuarios únicos cargados: {len(unique_users)}")
-            
-            # Selección de usuarios y visualización de los datos filtrados (sin valores seleccionados por defecto)
             usernames = st.multiselect("Elige usuarios", unique_users)
             if usernames:
                 filtered_data = df[df['username'].isin(usernames)]
-                
-                # Gráfico de dispersión para mostrar relación entre likes y comments
                 scatter_plot = alt.Chart(filtered_data).mark_circle(size=60).encode(
                     x='likes:Q',
                     y='comments:Q',
@@ -103,7 +72,6 @@ elif page == "Data Analysis":
                 ).properties(
                     title='Relación entre Likes y Comentarios por Usuario'
                 )
-                
                 st.altair_chart(scatter_plot, use_container_width=True)
             else:
                 st.write("Selecciona al menos un usuario para visualizar el gráfico.")
