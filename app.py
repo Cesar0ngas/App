@@ -15,6 +15,7 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    db = client["instagram_data"]  # Selecciona la base de datos aquí
     collection = db["posts"]
     data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
     return pd.json_normalize(data)
