@@ -14,11 +14,12 @@ st.set_page_config(
 # Función para cargar datos con cache para evitar recarga completa
 @st.cache_data
 def load_data():
-    client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/instagram_data?retryWrites=true&w=majority")
     db = client["instagram_data"]  # Selecciona la base de datos aquí
     collection = db["posts"]
     data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
     return pd.json_normalize(data)
+
 
 # Menú de navegación en la barra lateral (Welcome y Data Analysis)
 page = st.sidebar.selectbox("Select a Page", ["Welcome", "Data Analysis"])
