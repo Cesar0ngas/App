@@ -14,7 +14,7 @@ st.set_page_config(
 # Función para cargar datos con cache para evitar recarga completa
 @st.cache_data
 def load_data():
-    client = MongoClient("mongodb://localhost:27017/")
+    client = MongoClient("mongodb+srv://<username>:<password>@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority")
     db = client["instagram_data"]
     collection = db["posts"]
     data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
