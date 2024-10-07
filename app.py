@@ -26,8 +26,6 @@ def load_data():
         st.error(f"Detalles del error: {err}")
         return pd.DataFrame()  # Retornar un DataFrame vacío
 
-
-
 # Menú de navegación en la barra lateral (Welcome y Data Analysis)
 page = st.sidebar.selectbox("Select a Page", ["Welcome", "Data Analysis"])
 
@@ -74,32 +72,38 @@ elif page == "Data Analysis":
                 progress_bar.progress(i)
                 status_text.text(f"{i}% Complete")
             
-            st.session_state.df = load_data()
-            st.session_state.data_loaded = True  # Marcar que los datos se han cargado
+            df = load_data()
+            if df.empty:
+                st.warning("No se encontraron datos. Verifica la conexión y la consulta a la base de datos.")
+            else:
+                st.session_state.df = df
+                st.session_state.data_loaded = True  # Marcar que los datos se han cargado
+                st.write("¡Datos cargados con éxito!")
+            
             progress_bar.empty()
             status_text.empty()
-            data_load_state.text("¡Datos cargados con éxito!")
         
-        # Lista de usuarios únicos
-        df = st.session_state.df
-        unique_users = df['username'].unique()
-        st.write(f"Total de usuarios únicos cargados: {len(unique_users)}")
-        
-        # Selección de usuarios y visualización de los datos filtrados (sin valores seleccionados por defecto)
-        usernames = st.multiselect("Elige usuarios", unique_users)
-        if usernames:
-            filtered_data = df[df['username'].isin(usernames)]
+        # Lista de usuarios únicos y análisis solo si hay datos cargados
+        if st.session_state.data_loaded:
+            df = st.session_state.df
+            unique_users = df['username'].unique()
+            st.write(f"Total de usuarios únicos cargados: {len(unique_users)}")
             
-            # Gráfico de dispersión para mostrar relación entre likes y comments
-            scatter_plot = alt.Chart(filtered_data).mark_circle(size=60).encode(
-                x='likes:Q',
-                y='comments:Q',
-                color='username:N',
-                tooltip=['username', 'likes', 'comments']
-            ).properties(
-                title='Relación entre Likes y Comentarios por Usuario'
-            )
-            
-            st.altair_chart(scatter_plot, use_container_width=True)
-        else:
-            st.write("Selecciona al menos un usuario para visualizar el gráfico.")
+            # Selección de usuarios y visualización de los datos filtrados (sin valores seleccionados por defecto)
+            usernames = st.multiselect("Elige usuarios", unique_users)
+            if usernames:
+                filtered_data = df[df['username'].isin(usernames)]
+                
+                # Gráfico de dispersión para mostrar relación entre likes y comments
+                scatter_plot = alt.Chart(filtered_data).mark_circle(size=60).encode(
+                    x='likes:Q',
+                    y='comments:Q',
+                    color='username:N',
+                    tooltip=['username', 'likes', 'comments']
+                ).properties(
+                    title='Relación entre Likes y Comentarios por Usuario'
+                )
+                
+                st.altair_chart(scatter_plot, use_container_width=True)
+            else:
+                st.write("Selecciona al menos un usuario para visualizar el gráfico.")
