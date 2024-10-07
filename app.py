@@ -17,7 +17,7 @@ st.set_page_config(
 def load_data():
     try:
         # Conexión a MongoDB con URI y configuración SSL
-        MONGO_URI = "mongodb+srv://sanchezpinamiguelangel:Mikeberius@instagram.bat2t.mongodb.net/?retryWrites=true&w=majority&ssl=true&tlsAllowInvalidCertificates=true&appName=Instagram"
+        MONGO_URI = "mongodb+srv://cesarcorrea:8zCNfNIz3eG5x6xDz@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
         client = MongoClient(
             MONGO_URI,
             tls=True,
