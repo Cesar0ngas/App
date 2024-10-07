@@ -16,7 +16,7 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     try:
-        client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/instagram_data?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true")
+        client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/instagram_data?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true")
         db = client["instagram_data"]
         collection = db["posts"]
         data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
