@@ -16,11 +16,21 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     try:
-        client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/instagram_data?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true")
+        # Conexión a MongoDB con URI y configuración SSL
+        MONGO_URI = "mongodb+srv://sanchezpinamiguelangel:Mikeberius@instagram.bat2t.mongodb.net/?retryWrites=true&w=majority&ssl=true&tlsAllowInvalidCertificates=true&appName=Instagram"
+        client = MongoClient(
+            MONGO_URI,
+            tls=True,
+            tlsAllowInvalidCertificates=True
+        )
+        
         db = client["instagram_data"]
         collection = db["posts"]
+        
+        # Extracción de datos
         data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
         return pd.json_normalize(data)
+    
     except pymongo.errors.ServerSelectionTimeoutError as err:
         st.error("Error de conexión a la base de datos: No se pudo conectar a MongoDB.")
         st.error(f"Detalles del error: {err}")
