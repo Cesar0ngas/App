@@ -14,11 +14,17 @@ st.set_page_config(
 # Función para cargar datos con cache para evitar recarga completa
 @st.cache_data
 def load_data():
-    client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/instagram_data?retryWrites=true&w=majority")
-    db = client["instagram_data"]  # Selecciona la base de datos aquí
-    collection = db["posts"]
-    data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
-    return pd.json_normalize(data)
+    try:
+        client = MongoClient("mongodb+srv://cesarcorrea:aRi2Ys8pCaXcZZhd@cluster0.rwqzs.mongodb.net/instagram_data?retryWrites=true&w=majority&serverSelectionTimeoutMS=5000")
+        db = client["instagram_data"]
+        collection = db["posts"]
+        data = list(collection.find({}, {'_id': 0, 'username': 1, 'likes': 1, 'comments': 1}))
+        return pd.json_normalize(data)
+    except pymongo.errors.ServerSelectionTimeoutError as err:
+        st.error("Error de conexión a la base de datos: No se pudo conectar a MongoDB.")
+        st.error(f"Detalles del error: {err}")
+        return pd.DataFrame()  # Retornar un DataFrame vacío
+
 
 
 # Menú de navegación en la barra lateral (Welcome y Data Analysis)
