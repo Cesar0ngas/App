@@ -60,7 +60,7 @@ elif page == "Data Analysis":
         Here you will be able to visualize the relationship between likes and comments for each selected user. 
         Use the button to load the data and then select the users of interest to generate an interactive graph.
         
-        Explore and discover who are the most popular users with the highest level of engagement on their posts!📊
+        Explore and discover who are the most popular users with the highest level of engagement on their posts! 📊
     """)
     
     if "data_loaded" not in st.session_state:
@@ -87,10 +87,10 @@ elif page == "Data Analysis":
         # Verificar si hay datos cargados
         df = st.session_state.df
         if df.empty:
-            st.error("No data found. Verify the connection and the database query..")
+            st.error("No data found. Verify the connection and the database query.")
         else:
             st.write("Data loaded:")
-            st.write(df.head())
+            st.dataframe(df, use_container_width=True)  # Mostrar todo el dataframe
             unique_users = df['username'].unique()
             st.write(f"Total unique users loaded: {len(unique_users)}")
             
@@ -114,9 +114,9 @@ elif page == "Data Analysis":
                 st.write("### Chart of Likes and Comments by User (Matplotlib)")
                 fig, ax = plt.subplots()
                 ax.bar(filtered_data['username'], filtered_data['likes'], label='Likes', color='skyblue')
-                ax.bar(filtered_data['username'], filtered_data['comments'], bottom=filtered_data['likes'], label='Comentarios', color='orange')
-                ax.set_ylabel("Cantidad")
-                ax.set_title("Likes and Comments per user")
+                ax.bar(filtered_data['username'], filtered_data['comments'], bottom=filtered_data['likes'], label='Comments', color='orange')
+                ax.set_ylabel("Quantity")
+                ax.set_title("Likes and Comments per User")
                 ax.legend()
                 st.pyplot(fig)
                 
@@ -126,8 +126,8 @@ elif page == "Data Analysis":
                     filtered_data,
                     x='username',
                     y=['likes', 'comments'],
-                    title="Likes y Comments per User",
-                    labels={'value': 'Cantidad', 'variable': 'Métrica'},
+                    title="Likes and Comments per User",
+                    labels={'value': 'Quantity', 'variable': 'Metric'},
                     barmode='group'
                 )
                 st.plotly_chart(fig_plotly)
