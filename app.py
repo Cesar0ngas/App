@@ -5,6 +5,8 @@ import time
 from pymongo import MongoClient
 import pandas as pd
 import pymongo
+import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Configuración de la página
 st.set_page_config(
@@ -54,11 +56,11 @@ elif page == "Data Analysis":
     st.write("# Data Analysis Page")
     
     st.write("""
-        En esta sección, podrás analizar la interacción de los usuarios de Instagram en base a sus publicaciones. 
-        Aquí podrás visualizar la relación entre los likes y comentarios de cada usuario seleccionado. 
-        Utiliza el botón para cargar los datos y luego selecciona los usuarios de interés para generar un gráfico interactivo.
+        In this section, you will be able to analyze the interaction of Instagram users based on their posts. 
+        Here you will be able to visualize the relationship between likes and comments for each selected user. 
+        Use the button to load the data and then select the users of interest to generate an interactive graph.
         
-        ¡Explora y descubre quiénes son los usuarios más populares y con mayor nivel de engagement en sus publicaciones! 📊
+        Explore and discover who are the most popular users with the highest level of engagement on their posts!📊
     """)
     
     if "data_loaded" not in st.session_state:
@@ -70,7 +72,7 @@ elif page == "Data Analysis":
         status_text = st.sidebar.empty()
         
         if not st.session_state.data_loaded:
-            data_load_state = st.text('Cargando datos...')
+            data_load_state = st.text('Loading Data...')
             for i in range(1, 101):
                 time.sleep(0.01)
                 progress_bar.progress(i)
@@ -80,32 +82,55 @@ elif page == "Data Analysis":
             st.session_state.data_loaded = True
             progress_bar.empty()
             status_text.empty()
-            data_load_state.text("¡Datos cargados con éxito!")
+            data_load_state.text("¡Data successfully loaded!")
         
         # Verificar si hay datos cargados
         df = st.session_state.df
         if df.empty:
-            st.error("No se encontraron datos. Verifica la conexión y la consulta a la base de datos.")
+            st.error("No data found. Verify the connection and the database query..")
         else:
-            st.write("Datos cargados:")
+            st.write("Data loaded:")
             st.write(df.head())
             unique_users = df['username'].unique()
-            st.write(f"Total de usuarios únicos cargados: {len(unique_users)}")
+            st.write(f"Total unique users loaded: {len(unique_users)}")
             
             # Selección de usuarios y visualización de los datos filtrados
-            usernames = st.multiselect("Elige usuarios", unique_users)
+            usernames = st.multiselect("Choose users", unique_users)
             if usernames:
                 filtered_data = df[df['username'].isin(usernames)]
                 
+                # Gráfico de Altair (Interacción entre Likes y Comentarios)
                 scatter_plot = alt.Chart(filtered_data).mark_circle(size=60).encode(
                     x='likes:Q',
                     y='comments:Q',
                     color='username:N',
                     tooltip=['username', 'likes', 'comments']
                 ).properties(
-                    title='Relación entre Likes y Comentarios por Usuario'
+                    title='Ratio of Likes to Comments per User'
                 )
-                
                 st.altair_chart(scatter_plot, use_container_width=True)
+                
+                # Gráfico de Matplotlib (Barras Apiladas de Likes y Comentarios)
+                st.write("### Chart of Likes and Comments by User (Matplotlib)")
+                fig, ax = plt.subplots()
+                ax.bar(filtered_data['username'], filtered_data['likes'], label='Likes', color='skyblue')
+                ax.bar(filtered_data['username'], filtered_data['comments'], bottom=filtered_data['likes'], label='Comentarios', color='orange')
+                ax.set_ylabel("Cantidad")
+                ax.set_title("Likes and Comments per user")
+                ax.legend()
+                st.pyplot(fig)
+                
+                # Gráfico de Plotly (Gráfico de Barras Interactivo)
+                st.write("### Interactive Chart of Likes and Comments per User (Plotly)")
+                fig_plotly = px.bar(
+                    filtered_data,
+                    x='username',
+                    y=['likes', 'comments'],
+                    title="Likes y Comments per User",
+                    labels={'value': 'Cantidad', 'variable': 'Métrica'},
+                    barmode='group'
+                )
+                st.plotly_chart(fig_plotly)
+                
             else:
-                st.write("Selecciona al menos un usuario para visualizar el gráfico.")
+                st.write("Select at least one user to display the graph.")
