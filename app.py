@@ -17,7 +17,7 @@ st.set_page_config(
 def load_data():
     try:
         # Conexión a MongoDB
-        MONGO_URI = "mongodb+srv://cesarcorrea:fUkTwjDKhDfY2rBs@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE"
+        MONGO_URI = "mongodb+srv://cesarcorrea:MfXGcFDodXyjA2zW@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE"
         client = MongoClient(MONGO_URI, tls=True, tlsAllowInvalidCertificates=True)
         
         db = client["instagram_data"]
