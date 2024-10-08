@@ -8,16 +8,16 @@ import pymongo
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Analysis",
+    page_title="Instagram Analysis",
     page_icon="🦝",
 )
 
-# Función para cargar datos con cache para evitar recarga completa
+# Función para cargar datos con caché
 @st.cache_data
 def load_data():
     try:
-        # Conexión a MongoDB con URI y configuración SSL
-        MONGO_URI = "mongodb+srv://cesarcorrea:8zCNfNIz3eG5x6xDz@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true&ssl_cert_reqs=CERT_NONE"
+        # Conexión a MongoDB
+        MONGO_URI = "mongodb+srv://cesarcorrea:8zCNfNIz3eG5x6xDz@cluster0.rwqzs.mongodb.net/?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE"
         client = MongoClient(
             MONGO_URI,
             tls=True,
@@ -36,7 +36,7 @@ def load_data():
         st.error(f"Detalles del error: {err}")
         return pd.DataFrame()  # Retornar un DataFrame vacío
 
-# Menú de navegación en la barra lateral (Welcome y Data Analysis)
+# Menú de navegación en la barra lateral
 page = st.sidebar.selectbox("Select a Page", ["Welcome", "Data Analysis"])
 
 if page == "Welcome":
@@ -44,7 +44,7 @@ if page == "Welcome":
     st.write("""
         Welcome to the Instagram Analytics app, a tool designed to provide valuable insights into engagement and content on Instagram.
         This app helps brands, influencers, and social media analysts better understand user behavior and content reception on Instagram.
-
+        
         ### What can you do with this app?
         - Visualize Engagement: Explore which users have the most engagement on their posts through graphs showing the number of likes and comments.
         - Content Status: Quickly identify the proportion of active versus inactive content to understand engagement dynamics.
@@ -57,7 +57,6 @@ if page == "Welcome":
 elif page == "Data Analysis":
     st.write("# Data Analysis Page")
     
-    # Agregar un "choro" o texto introductorio
     st.write("""
         En esta sección, podrás analizar la interacción de los usuarios de Instagram en base a sus publicaciones. 
         Aquí podrás visualizar la relación entre los likes y comentarios de cada usuario seleccionado. 
